@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas Registradas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+</head>
+<body class="bg-slate-50 font-Barlow w-full min-w-[375px]">
+    <header class="bg-green-600">
+        <h1 class="font-Fraunces text-white text-4xl font-bold text-center py-6">
+            Reservas Registradas
+        </h1>
+    </header>
+
+    <main class="container mx-auto mt-8 px-4">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <!-- Tabla de Reservas -->
+            <section>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Historial de Reservas</h2>
+                
+                <!-- Tabla de datos de las reservas -->
+                <table class="min-w-full border-collapse table-auto">
+                    <thead>
+                        <tr>
+                            <th class="border p-2 text-sm text-left">Número de Cupón</th>
+                            <th class="border p-2 text-sm text-left">Cliente</th>
+                            <th class="border p-2 text-sm text-left">Reserva</th>
+                            <th class="border p-2 text-sm text-left">Subtotal</th>
+                            <th class="border p-2 text-sm text-left">Fecha</th> <!-- Nueva columna de Fecha -->
+                        </tr>
+                    </thead>
+                    <tbody id="tablaReservas">
+                        <!-- Las reservas se agregarán aquí dinámicamente con JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Botón para exportar manualmente -->
+            <div class="flex items-center place-content-around">
+                <div class="mt-8 text-center">
+                    <button onclick="exportarAExcel(JSON.parse(localStorage.getItem('reservas')))" class="text-green-700 py-2 px-4 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
+                            <path d="M18 3H6c-1.1 0-1.99.9-1.99 2L4 19c0 1.1.89 2 1.99 2h12c1.1 0 1.99-.9 1.99-2L20 5c0-1.1-.89-2-1.99-2zm-6 14h-2v-2h2v2zm0-4h-2v-4h2v4zm6-6H6V5h12v6z"/>
+                        </svg>
+                        Excel
+                    </button>
+                </div>
+                <!-- Botón para crear una nueva reserva -->
+                <div class="mt-8 text-center">
+                    <a href="dashboard.html">
+                        <button class=" text-blue-500 py-2 px-4  flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-2">
+                                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                            </svg>
+                        </button>
+                    </a>
+                </div>
+                
+                
+                <!-- Botón para volver a la página anterior (pagina2.html) -->
+                <div class="mt-8 text-center">
+                    <a href="pagina2.html">
+                        <button class="text-green-500 py-2 px-4 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 mr-2">
+                                <path d="M19 12l-7-7v4H3v6h9v4l7-7z"/>
+                            </svg>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+// Función para guardar una nueva reserva
+function guardarReserva(reserva) {
+    const reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+
+    // Verificar si el número de reservas excede el límite
+    if (reservas.length >= 50) {
+        // Exportar las reservas a un archivo Excel antes de eliminarlas
+        exportarAExcel(reservas);
+        // Eliminar las reservas más antiguas (dejamos solo las 49 más recientes)
+        reservas.splice(0, reservas.length - 49);
+    }
+
+    // Agregar la nueva reserva
+    reservas.push(reserva);
+
+    // Guardar las reservas actualizadas en localStorage
+    localStorage.setItem('reservas', JSON.stringify(reservas));
+}
+
+// Función para exportar las reservas a un archivo Excel
+function exportarAExcel(reservas) {
+    const ws = XLSX.utils.json_to_sheet(reservas);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Reservas");
+    
+    // Guardar el archivo Excel con el nombre 'reservas.xlsx'
+    XLSX.writeFile(wb, "reservas.xlsx");
+}
+
+// Función para cargar las reservas del localStorage y mostrar en la tabla
+function cargarReservas() {
+    const reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+    const tablaReservas = document.getElementById('tablaReservas');
+    
+    // Si no hay reservas, mostramos un mensaje
+    if (reservas.length === 0) {
+        tablaReservas.innerHTML = `
+            <tr>
+                <td colspan="5" class="border p-4 text-center text-gray-600">No hay reservas registradas</td>
+            </tr>
+        `;
+    } else {
+        // Agregar cada reserva a la tabla
+        reservas.forEach((reserva, index) => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td class="border p-2 text-sm">${reserva.cupon}</td>
+                <td class="border p-2 text-sm">${reserva.cliente}</td>
+                <td class="border p-2 text-sm">${reserva.reservaNombre}</td>
+                <td class="border p-2 text-sm">$${reserva.subtotal}</td>
+                <td class="border p-2 text-sm">${reserva.fecha}</td> <!-- Mostrar la fecha -->
+            `;
+            tablaReservas.appendChild(fila);
+        });
+    }
+}
+
+// Llamamos la función cuando se carga la página
+document.addEventListener('DOMContentLoaded', cargarReservas);
+    </script>
+</body>
+</html>
+
+
