@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupón de Reserva</title>
+    <link rel="stylesheet" href="output.css">
+</head>
+<body class="bg-slate-50 font-Fraunces w-full min-w-[380px]">
+    <header class="bg-green-600">
+        <h1 class="font-Fraunces text-white text-4xl font-bold text-center py-6">
+            Cupón de Reserva
+        </h1>
+    </header>
+
+    <main class="container mx-auto mt-8 px-4">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <!-- Detalles de la reserva -->
+            <section class="mb-6">
+                <h2 class="text-2xl text-center font-semibold text-gray-800">Detalles de la Reserva</h2>
+                <div id="cuponInfo" class="mt-4">
+                    <!-- Los datos se llenarán aquí con JavaScript -->
+                </div>
+            </section>
+
+            <!-- Botones de acción -->
+            <section class="flex justify-center space-x-6 mt-10">
+                <!-- Enlace para agregar una nueva reserva con icono -->
+                <div class="w-52 text-sm">
+                    <a href="dashboard.html" 
+                        class="flex items-center text-green-600 hover:text-blue-700 font-semibold transition-colors duration-300">
+                        <!-- Icono de agregar nueva reserva (SVG o imagen) -->
+                        <img src="/img/AddRsva.svg" alt="Agregar nueva reserva" class="w-6 h-6 mr-2">
+                        Nueva Reservacion
+                    </a>
+                </div>
+            
+                <!-- Enlace para ver reservas con icono -->
+                <div class="w-52 text-sm">
+                    <a href="javascript:void(0)" 
+                        class="flex items-center text-green-600 hover:text-blue-700 font-semibold transition-colors duration-300"
+                        onclick="verReservas()">
+                        <!-- Icono de ver reservas (SVG o imagen) -->
+                        <img src="/img/MenuBook.svg" alt="Ver reservas" class="w-6 h-6 mr-2">
+                        Ver Reservas
+                    </a>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+<!-- Modal para opciones de pago -->
+<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <!-- Botón de Cerrar como imagen en la parte superior -->
+        <div class="flex justify-end">
+            <button onclick="cerrarModal()">
+                <img src="/img/btnClose.png" alt="Cerrar" class="w-6 h-6">
+            </button>
+        </div>
+
+        <h2 class="text-md font-semibold text-center text-gray-800 mb-4">Seleccione una forma de pago</h2>
+        
+        <!-- Tabla de formas de pago -->
+        <table class="w-full mb-4">
+            <thead>
+                <tr>
+                    <th class="border p-2 text-xs text-left">Forma de Pago</th>
+                    <th class="border p-2 text-xs text-left">Moneda</th>
+                    <th class="border p-2 text-xs text-left">Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Efectivo -->
+                <tr>
+                    <td class="border p-2 text-center">
+                        <img src="/img/Cash.png" alt="Efectivo" class="w-8 h-8 mx-auto">
+                    </td>
+                    <td class="border p-2">
+                        <select id="efectivoMoneda" class="w-full text-sm" aria-label="Selecciona la moneda para efectivo">
+                            <option value="USD">USD</option>
+                            <option value="MXN">Pesos</option>
+                        </select>
+                    </td>
+                    <td class="border p-2">
+                        <input type="number" id="efectivoCantidad" class="w-full" value="0" min="0" step="any" aria-label="Cantidad de efectivo">
+                    </td>
+                </tr>
+
+                <!-- Tarjeta -->
+                <tr>
+                    <td class="border p-2 text-center">
+                        <img src="/img/T.CIcon.png" alt="Tarjeta" class="w-8 h-8 mx-auto">
+                    </td>
+                    <td class="border p-2">
+                        <select id="tarjetaMoneda" class="w-full text-sm" aria-label="Selecciona la moneda para tarjeta">
+                            <option value="USD">USD</option>
+                            <option value="MXN">Pesos</option>
+                        </select>
+                    </td>
+                    <td class="border p-2">
+                        <input type="number" id="tarjetaCantidad" class="w-full" value="0" min="0" step="any" aria-label="Cantidad con tarjeta">
+                    </td>
+                </tr>
+
+                <!-- Cargo adicional -->
+                <tr>
+                    <td class="border p-2 text-center">
+                        <img src="/img/RoomPayment.png" alt="Cargo adicional" class="w-8 h-8 mx-auto">
+                    </td>
+                    <td class="border p-2">
+                        <select id="cargoMoneda" class="w-full text-sm" aria-label="Selecciona la moneda para cargo adicional">
+                            <option value="USD">USD</option>
+                            <option value="MXN">Pesos</option>
+                        </select>
+                    </td>
+                    <td class="border p-2">
+                        <input type="number" id="cargoCantidad" class="w-full" value="0" min="0" step="any" aria-label="Cantidad de cargo adicional">
+                    </td>
+                </tr>
+
+                <!-- Link de pago -->
+                <tr>
+                    <td class="border p-2 text-center">
+                        <img src="/img/linkPago.png" alt="Link" class="w-8 h-8 mx-auto">
+                    </td>
+                    <td class="border p-2">
+                        <select id="linkMoneda" class="w-full text-sm" aria-label="Selecciona la moneda para link de pago">
+                            <option value="USD">USD</option>
+                            <option value="MXN">Pesos</option>
+                        </select>
+                    </td>
+                    <td class="border p-2">
+                        <input type="number" id="linkCantidad" class="w-full" value="0" min="0" step="any" aria-label="Cantidad del link de pago">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Total y restante -->
+        <div class="flex justify-between">
+            <p class="font-semibold text-sm">Total: $<span id="totalPago">0</span> USD</p>
+            <p class="font-semibold text-sm">Restante: $<span id="restantePago">0</span> USD</p>
+        </div>
+
+        <!-- Botón de Pagar utilizando todo el ancho -->
+        <div class="mt-4 text-center">
+            <button id="confirmarPago" onclick="confirmarPago()" class="bg-blue-600 text-white w-full p-3 rounded-lg hover:bg-blue-700">Pagar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Función para cerrar el modal
+    function cerrarModal() {
+        document.getElementById('paymentModal').classList.add('hidden');
+    }
+
+    // Función para abrir el modal
+    function abrirModal() {
+        document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
+    // Función para confirmar el pago
+    function confirmarPago() {
+        const efectivo = parseFloat(document.getElementById('efectivoCantidad').value) || 0;
+        const tarjeta = parseFloat(document.getElementById('tarjetaCantidad').value) || 0;
+        const cargo = parseFloat(document.getElementById('cargoCantidad').value) || 0;
+        const link = parseFloat(document.getElementById('linkCantidad').value) || 0;
+
+        // Calcular el total
+        const total = efectivo + tarjeta + cargo + link;
+        const restante = 100 - total;  // Ajusta este valor según tu lógica
+
+        // Actualizar el total y el restante
+        document.getElementById('totalPago').textContent = total.toFixed(2);
+        document.getElementById('restantePago').textContent = restante.toFixed(2);
+
+        // Mostrar mensaje de pago confirmado
+        alert('Pago confirmado. Total pagado: $' + total.toFixed(2));
+        cerrarModal();
+    }
+
+</script>
+
+
+
+    <script>
+// Función para cargar los datos desde localStorage y mostrar el cupón
+function cargarCupon() {
+    const cupónData = JSON.parse(localStorage.getItem('cupónData'));
+
+    console.log(cupónData)
+
+    if (cupónData) {
+        const cuponInfo = document.getElementById("cuponInfo");
+        cuponInfo.innerHTML = `
+            <div id="reserva" class="sm:flex place-content-around items-center text-gray-700">
+                <div class="text-sm">
+                    <h3 class="text-xl font-semibold text-gray-700">Datos del Cliente:</h3>
+                    <p class="text-lg">Cupón: ${cupónData.codigo}</p>
+                    <p class="text-sm">Cliente: ${cupónData.nombre}</p>
+                    <p class="text-sm">Correo: ${cupónData.correo}</p>
+                    <p class="text-sm">Teléfono: ${cupónData.telefono}</p>
+                </div>
+                <div>
+                    <h3 class="text-xl text-center font-semibold text-gray-700 mt-4">Reservaciones:</h3>
+                    <ul class="mt-2">
+                        ${cupónData.carrito.map((item, index) => {
+                            // Calcular el subtotal con el descuento si aplica
+                            let subtotal = item.precio * item.adultos + item.precioNiño * item.niños;
+                            if (item.descuento) {
+                                subtotal *= 0.9;  // Aplica el 10% de descuento
+                            }
+                            return `
+                                <li id="reserva_${index}" class="text-sm mb-2 ${item.pagado ? 'text-green-600' : 'text-orange-600'}">
+                                    <strong>${item.nombre}</strong><br>
+                                    Fecha: ${item.fecha}<br>
+                                    Adultos: ${item.adultos} | Niños: ${item.niños}
+                                    Subtotal: $${subtotal.toFixed(2)} USD
+                                    ${item.descuento ? "(Con descuento del 10%)" : ""}<br>
+                                    ${item.pagado ?  `
+                                        <button class="bg-green-600 w-full text-white p-2 rounded mt-2 text-xs hover:bg-green-700"
+                                            onclick="imprimirReservacion(${index})">Imprimir</button>
+                                    ` : `
+                                        <button class="bg-blue-600 w-full text-white p-2 rounded mt-2 text-xs hover:bg-blue-700"
+                                            onclick="abrirModal(${index})">Pagar</button>
+                                    `}
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>
+                </div>
+            </div>
+            <h3 class="text-lg text-center font-semibold text-gray-800 mt-4">Total: $${cupónData.total} USD</h3>
+        `;
+    } else {
+        alert("No hay datos de cupón disponibles.");
+        window.location.href = "index.html"; // Redirige si no hay datos en el localStorage
+    }
+}
+
+
+        // Llamar la función para cargar el cupón cuando se carga la página
+        document.addEventListener('DOMContentLoaded', cargarCupon);
+
+// Función para abrir el modal de pago
+function abrirModal(index) {
+    const modal = document.getElementById('paymentModal');
+    modal.classList.remove('hidden');  // Mostrar el modal
+    localStorage.setItem('reservaIndex', index);  // Guardar el índice de la reserva seleccionada
+
+    // Restablecer las cantidades de pago a 0
+    document.getElementById('efectivoCantidad').value = 0;
+    document.getElementById('tarjetaCantidad').value = 0;
+    document.getElementById('cargoCantidad').value = 0;
+    document.getElementById('linkCantidad').value = 0;
+
+    // Eliminar el botón de "Cerrar" si existe
+    const cerrarButton = modal.querySelector('button.bg-red-600');
+    if (cerrarButton) {
+        cerrarButton.remove();
+    }
+
+    // Actualizar el total y el restante cuando se abre el modal
+    actualizarTotalPago();
+}
+
+
+
+// Función para actualizar el total y el restante
+function actualizarTotalPago() {
+    const cupónData = JSON.parse(localStorage.getItem('cupónData'));
+    const index = localStorage.getItem('reservaIndex');
+    const item = cupónData.carrito[index];
+
+    // Calcular el total con descuento si aplica
+    let total = item.precio * item.adultos + item.precioNiño * item.niños;
+    if (item.descuento) {
+        total *= 0.9; // Aplica un descuento del 10%
+    }
+
+    // Actualizar el total y el restante en el modal
+    const totalPago = document.getElementById('totalPago');
+    const restantePago = document.getElementById('restantePago');
+    
+    totalPago.textContent = total.toFixed(2);  // Muestra el total con descuento
+    restantePago.textContent = total.toFixed(2);  // Muestra el total restante con descuento
+}
+
+
+
+// Función para confirmar el pago
+function confirmarPago() {
+    const cupónData = JSON.parse(localStorage.getItem('cupónData'));
+    const index = localStorage.getItem('reservaIndex');
+    const item = cupónData.carrito[index];
+
+    // Calcular el total con descuento si aplica
+    let total = item.precio * item.adultos + item.precioNiño * item.niños;
+    if (item.descuento) {
+        total *= 0.9; // Aplica un descuento del 10%
+    }
+
+    // Obtener las cantidades pagadas
+    const efectivoCantidad = parseFloat(document.getElementById('efectivoCantidad').value) || 0;
+    const tarjetaCantidad = parseFloat(document.getElementById('tarjetaCantidad').value) || 0;
+    const cargoCantidad = parseFloat(document.getElementById('cargoCantidad').value) || 0;
+    const linkCantidad = parseFloat(document.getElementById('linkCantidad').value) || 0;
+
+    // Calcular el total pagado
+    const totalPagado = efectivoCantidad + tarjetaCantidad + cargoCantidad + linkCantidad;
+
+    if (totalPagado < total) {
+        alert("Tienes que pagar el total para continuar");
+        return;
+    }
+
+    // Guardar las formas de pago en el cupón
+    item.pagado = true;
+    item.formasPago = {
+        efectivo: efectivoCantidad,
+        tarjeta: tarjetaCantidad,
+        cargo: cargoCantidad,
+        link: linkCantidad
+    };
+
+    // Actualizar el cupón en localStorage
+    localStorage.setItem('cupónData', JSON.stringify(cupónData));
+
+    // Guardar la reserva en el historial de reservas
+    const reserva = {
+        cupon: cupónData.codigo,
+        cliente: cupónData.nombre,
+        reservaNombre: item.nombre,
+        fecha: item.fecha,
+        subtotal: total.toFixed(2)
+    };
+
+    // Obtener las reservas actuales del localStorage y agregar la nueva
+    const reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+    reservas.push(reserva);
+
+    // Actualizar el localStorage con las nuevas reservas
+    localStorage.setItem('reservas', JSON.stringify(reservas));
+
+    // Actualizar la reserva en el HTML
+    const reservaElement = document.getElementById(`reserva_${index}`);
+    reservaElement.classList.remove("text-orange-600");
+    reservaElement.classList.add("text-green-600");
+
+    // Eliminar el botón de pagar
+    const pagarButton = reservaElement.querySelector('button.bg-blue-600');
+    if (pagarButton) {
+        pagarButton.remove();  // Eliminar el botón de pagar
+    }
+
+    // Mostrar el botón de imprimir
+    let imprimirButton = reservaElement.querySelector('button.bg-green-600');
+    if (!imprimirButton) {
+        imprimirButton = document.createElement("button");
+        imprimirButton.classList.add("bg-green-600", "text-white", "p-2", "rounded","w-full", "mt-2", "text-xs", "hover:bg-green-700");
+        imprimirButton.textContent = "Imprimir";
+        imprimirButton.onclick = function () {
+            imprimirReservacion(index);
+        };
+        reservaElement.appendChild(imprimirButton);
+    }
+
+    // Cerrar el modal de pago
+    const modal = document.getElementById('paymentModal');
+    modal.classList.add('hidden');  // Cierra el modal cuando el pago es exitoso
+
+}
+
+
+// Función para imprimir la reservación específica (modificada para abrir impresion.html)
+function imprimirReservacion(index) {
+    const cupónData = JSON.parse(localStorage.getItem('cupónData'));
+    const item = cupónData.carrito[index];
+
+    // Calcular el subtotal con descuento si aplica
+    let subtotal = item.precio * item.adultos + item.precioNiño * item.niños;
+    if (item.descuento) {
+        subtotal *= 0.9;  // Aplica un descuento del 10%
+    }
+
+    // Crear un objeto con los detalles de la reservación, incluyendo el subtotal con descuento
+    const reservacionData = {
+        nombre: item.nombre,
+        fecha: item.fecha,
+        adultos: item.adultos,
+        niños: item.niños,
+        subtotal: subtotal.toFixed(2)  // Asegúrate de pasar el subtotal con descuento
+    };
+
+    // Guardar los detalles de la reservación con el descuento en localStorage
+    localStorage.setItem('reservacionData', JSON.stringify(reservacionData));
+
+    // Redirigir a la página de impresión (impresion.html)
+    window.location.href = "impresion.html";  // Asegúrate de tener esta página en tu proyecto
+}
+
+
+
+        // Función para cerrar el modal
+function cerrarModal() {
+    const modal = document.getElementById('paymentModal');
+    modal.classList.add('hidden');  // Ocultar el modal
+}
+
+        // Función para redirigir a la página de reservas
+        function verReservas() {
+            window.location.href = "reservas.html";  // Redirige a la página de reservas
+        }
+        
+    </script>
+</body>
+</html>
+
+
+
+
+

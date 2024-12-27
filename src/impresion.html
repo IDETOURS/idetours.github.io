@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva IdeTours</title>
+    <link rel="stylesheet" href="output.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="max-w-[400px] bg-gray-100 font-sans">
+
+    <div class="mx-auto bg-white p-6 mt-10">
+        <div class="flex">
+            <img src="/img/Logo Blanco.png" class="w-[200px] " alt="">     
+            <img src="/img/Qrcodekempi.png" class="w-[80px]" alt="">  
+        </div>
+        <div id="reservaPrint" class="reserva">
+            <!-- Los detalles de la reserva se llenarán aquí con JavaScript -->
+        </div>
+            <!-- Aquí se llenarán los datos de la reserva dinámicamente -->
+        </div>
+        <!-- Términos y Condiciones -->
+        <div class="mt-4 p-4 border-t border-gray-300">
+            <h3 class="text-md font-semibold text-gray-600">Liability Release and Expressed Assumption of Risk</h3>
+            <p class="mt-2 text-[12px] text text-gray-600 w-full">By paying, I am aware of the risk in the activity hereafter to as the activity and accept this risk. I understand and agree that neither IDETOURS SA DE CV, nor their respective parent companies, subsidiaries or any entities related to one or more of these entities, nor the respective officers, agents, employees, successor or assigns hereafter collectively referred to as the companies are affiliated with the supplier that is offering, sponsoring or providing the activity supplier. I understand and agree that the companies do not make any representations, either expressed or implied, regarding the supplier, its operations or the safety of any activities it is offering. I understand and agree that the companies are not and may not be held liable in any way for any injury.</p>
+            <h3 class="text-md font-semibold text-gray-800 mt-6">Cancellation Policies</h3>
+            <p class="mt-2 text-[12px] text-gray-600 w-full">By paying the service, I agree that cancellations have to be made with more than 24 hours for a 100% refund. 100% charge on cancellations with less than 24 hours or no show. In case of bad weather, a 100% refund is allowed only when the harbor is closed by the authorities. Coupon needed for any changes. Restrictions for combos may apply.</p>
+        </div>
+        
+        <div class="mt-6">
+            <p class="text-center text-xs text-gray-600">&copy; 2024 IDETours. Todos los derechos reservados.</p>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cupónData = JSON.parse(localStorage.getItem('cupónData'));
+    const reservaData = JSON.parse(localStorage.getItem('reservacionData'));
+
+    if (cupónData && reservaData) {
+        const reservaPrint = document.getElementById('reservaPrint');
+        reservaPrint.innerHTML = `
+            <div class="detalle mt-4 mb-4">
+                <p><strong>Name:</strong> ${cupónData.nombre}</p>
+            </div>
+
+            <div class="detalle mt-2">
+                <h3 class="text-center">Your reservations</h3>
+                <h2 class="mt-6 text-right">${reservaData.nombre}</h2>
+                <p class="text-right"><strong>Date:</strong> ${reservaData.fecha}</p>
+                <p class="text-right"><strong>Adults:</strong> ${reservaData.adultos}</p>
+                <p class="text-right"><strong>Kids:</strong> ${reservaData.niños}</p>
+                <p class="mt-2"><strong>Total:</strong> $${reservaData.subtotal} USD</p>  <!-- Muestra el precio con descuento -->
+            </div>
+        `;
+        // Iniciar la impresión automáticamente cuando cargue la página
+        window.print();
+    } else {
+        alert("No se encontraron datos de la reserva o cliente.");
+        window.location.href = "index.html";  // Redirige si no hay datos disponibles
+    }
+});
+
+    </script>
+</body>
+</html>
